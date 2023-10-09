@@ -4,6 +4,7 @@ import 'package:equb/utilities/colors.dart';
 import 'package:equb/utilities/path.dart';
 import 'package:equb/utilities/text_style.dart';
 import 'package:equb/views/login_screen.dart';
+import 'package:equb/widget/button.dart';
 import 'package:equb/widget/divider.dart';
 import 'package:equb/widget/progress_hud.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,6 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
   bool isBusy = true;
-  final languageController = Get.find<LanguageController>();
 
   initialize() {
     Future.delayed(const Duration(
@@ -43,10 +43,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
     return ProgressHUD(
+      languageSelectorVisible: false,
+      isBusy: isBusy,
       child: Container(
         height: Get.height,
         width: Get.width,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
               image: AssetImage(
                 AppImages.backgroundImage,
@@ -65,54 +67,41 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               ),
             ),
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    languageController.language == 'A' ? 'ዕቁብ' : 'Equb',
-                    style: XTextStyle.h1Black,
-                  ),
-                  Divider(
-                    thickness: 2,
-                    color: XColors.primaryColor,
-                    indent: 20,
-                    endIndent: 20,
-                  ),
-                  heightBox(10),
-                  Text(languageController.language == 'A'
-                      ? 'ዘመናዊ የሆነ የዕቁብ አያያዝ '
-                      : 'A modern way to use equb'),
-                  heightBox(30),
-                  InkWell(
-                    onTap: () {
-                      Get.to(() => LoginScreen());
-                    },
-                    onDoubleTap: () {
-                      Get.to(() => AdminLoginScreen());
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 30.w,
-                        vertical: 10.h,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30.r),
-                        color: XColors.primaryColor,
-                      ),
-                      child: Text(
-                        languageController.language == 'A' ? 'ልግባ' : 'Login',
-                        style: XTextStyle.titleWhite,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
+                child: GetBuilder<LanguageController>(
+                  builder: (controller) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          controller.language.value == 'A'
+                              ? 'ዕቁብ'
+                              : 'Equb',
+                          style: XTextStyle.h1Black,
+                        ),
+                        Divider(
+                          thickness: 2,
+                          color: XColors.primaryColor,
+                          indent: 20,
+                          endIndent: 20,
+                        ),
+                        heightBox(10),
+                        Text(controller.language.value == 'A'
+                            ? 'ዘመናዊ የሆነ የዕቁብ አያያዝ '
+                            : 'A modern way to use equb'),
+                        heightBox(30),
+                        XButton(onTap: () {
+        Get.to(() => LoginScreen());
+      },onDoubleTap: () {
+        Get.to(() => AdminLoginScreen());
+      },label: controller.language.value == 'A' ? 'ልግባ' : 'Login',),
+                      ],
+                    );
+                  },
+                )),
           ),
         ),
       ),
-      isBusy: isBusy,
     );
   }
 }
